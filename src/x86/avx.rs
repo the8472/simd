@@ -49,6 +49,7 @@ extern "platform-intrinsic" {
     fn x86_mm_testz_pd(x: f64x2, y: f64x2) -> i32;
     fn x86_mm256_testz_pd(x: f64x4, y: f64x4) -> i32;
     fn x86_mm256_testz_si256(x: u64x4, y: u64x4) -> i32;
+    fn x86_mm256_avg_epu8(x: u8x32, y: u8x32) -> u8x32;
 }
 
 #[doc(hidden)]
@@ -288,3 +289,13 @@ impl AvxI8x16 for i8x16 {}
 
 pub trait AvxBool8ix16 {}
 impl AvxBool8ix16 for bool8ix16 {}
+
+pub trait AvxU8x32 {
+    fn avg(self, other: u8x32) -> u8x32;
+}
+
+impl AvxU8x32 for u8x32 {
+    fn avg(self, other: u8x32) -> u8x32 {
+        unsafe { x86_mm256_avg_epu8(self, other) }
+    }
+}

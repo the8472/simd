@@ -53,6 +53,11 @@ extern "platform-intrinsic" {
     fn x86_mm256_subs_epu16(x: u16x16, y: u16x16) -> u16x16;
 }
 
+extern "C" {
+    #[link_name = "llvm.x86.avx2.psad.bw"]
+    fn psadbw(a: u8x32, b: u8x32) -> u64x4;
+}
+
 // broken on rustc 1.7.0-nightly (1ddaf8bdf 2015-12-12)
 // pub trait Avx2F32x8 {
 //     fn permutevar(self, other: i32x8) -> f32x8;
@@ -63,3 +68,19 @@ extern "platform-intrinsic" {
 //         unsafe { x86_mm256_permutevar8x32_ps(self, other) }
 //     }
 // }
+
+pub trait Avx2U8x32 {
+    fn sad(self, other: Self) -> u64x4;
+
+    fn shuffle_bytes(self, other: Self) -> u8x32;
+}
+impl Avx2U8x32 for u8x32 {
+    #[inline]
+    fn sad(self, other: Self) -> u64x4 {
+        unsafe { ::bitcast(psadbw(self, other)) }
+    }
+
+    fn shuffle_bytes(self, other: Self) -> u8x32 {
+        unsafe { ::bitcast(x86_mm256_shuffle_epi8(::bitcast(self), ::bitcast(other))) }
+    }
+}

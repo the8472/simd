@@ -1,7 +1,7 @@
 //! `simd` offers a basic interface to the SIMD functionality of CPUs.
 #![no_std]
 
-#![feature(cfg_target_feature, repr_simd, platform_intrinsics, const_fn)]
+#![feature(cfg_target_feature, repr_simd, platform_intrinsics, const_fn, link_llvm_intrinsics, simd_ffi)]
 #![allow(non_camel_case_types)]
 
 #[cfg(feature = "with-serde")]
